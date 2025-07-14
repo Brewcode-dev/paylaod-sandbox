@@ -4,7 +4,7 @@ import config from '@payload-config'
 
 export async function POST(
   request: Request,
-  { params }: { params: { contractorId: string } }
+  context: { params: Promise<{ contractorId: string }> }
 ): Promise<Response> {
   const payload = await getPayload({ config })
   // Konfiguracja dla bookings
@@ -22,7 +22,7 @@ export async function POST(
   })
 
   try {
-    const { contractorId } = params
+    const { contractorId } = await context.params
     
     if (!contractorId) {
       return new Response(JSON.stringify({ 

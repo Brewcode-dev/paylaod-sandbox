@@ -6,7 +6,6 @@ import React, { useEffect, useState } from 'react'
 
 import type { Header } from '@/payload-types'
 
-import { Logo } from '@/components/Logo/Logo'
 import { GlobalLogo } from '@/components/GlobalLogo'
 import { HeaderNav } from './Nav'
 

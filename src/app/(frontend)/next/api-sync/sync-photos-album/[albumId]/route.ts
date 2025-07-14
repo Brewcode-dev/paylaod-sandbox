@@ -4,7 +4,7 @@ import config from '@payload-config'
 
 export async function POST(
   request: Request,
-  { params }: { params: { albumId: string } }
+  context: { params: Promise<{ albumId: string }> }
 ): Promise<Response> {
   const payload = await getPayload({ config })
   // Konfiguracja dla photos
@@ -22,7 +22,7 @@ export async function POST(
   })
 
   try {
-    const { albumId } = params
+    const { albumId } = await context.params
     
     if (!albumId) {
       return new Response(JSON.stringify({ 

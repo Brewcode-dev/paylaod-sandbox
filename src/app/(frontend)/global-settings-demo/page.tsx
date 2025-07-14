@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 import { useGlobalSettings } from '../../../hooks/useGlobalSettings'
 
 export default function GlobalSettingsDemo() {
@@ -102,9 +103,9 @@ export default function GlobalSettingsDemo() {
       <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
         <h3 className="text-lg font-semibold mb-2">Jak edytować ustawienia?</h3>
         <ol className="list-decimal list-inside space-y-1">
-          <li>Przejdź do panelu administracyjnego: <a href="/admin" className="text-blue-600 dark:text-blue-400 underline">/admin</a></li>
+          <li>Przejdź do panelu administracyjnego: <Link href="/admin" className="text-blue-600 dark:text-blue-400 underline">/admin</Link></li>
           <li>Zaloguj się na konto administratora</li>
-          <li>Przejdź do sekcji "Settings" → "Global Settings"</li>
+          <li>Przejdź do sekcji &quot;Settings&quot; → &quot;Global Settings&quot;</li>
           <li>Edytuj ustawienia i zapisz zmiany</li>
           <li>Odśwież tę stronę, aby zobaczyć zmiany</li>
         </ol>

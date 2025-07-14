@@ -12,22 +12,12 @@ interface SocialMediaIconsProps {
     github?: string | null
   }
   classNameName?: string
-  iconSize?: 'sm' | 'md' | 'lg'
 }
 
 export const SocialMediaIcons: React.FC<SocialMediaIconsProps> = ({
   socialMedia,
   classNameName = '',
-  iconSize = 'md',
 }) => {
-  const sizeclassNamees = {
-    sm: 'w-4 h-4',
-    md: 'w-5 h-5',
-    lg: 'w-6 h-6',
-  }
-
-  const iconclassName = sizeclassNamees[iconSize]
-
   const socialLinks = [
     {
       name: 'Facebook',

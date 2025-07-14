@@ -14,17 +14,18 @@ interface Photo {
 }
 
 interface PhotosPageProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string
     limit?: string
     albumId?: string
-  }
+  }>
 }
 
 export default async function PhotosPage({ searchParams }: PhotosPageProps) {
-  const page = parseInt(searchParams.page || '1')
-  const limit = parseInt(searchParams.limit || '10')
-  const albumId = searchParams.albumId
+  const params = await searchParams
+  const page = parseInt(params.page || '1')
+  const limit = parseInt(params.limit || '10')
+  const albumId = params.albumId
 
   try {
     const payload = await getPayload({ config })

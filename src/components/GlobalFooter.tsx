@@ -76,8 +76,7 @@ export const GlobalFooter: React.FC<GlobalFooterProps> = ({ navItems = [] }) => 
           {showSocialMedia && socialMedia && (
             <div className="mt-4 text-gray-400">
               <SocialMediaIcons 
-                socialMedia={socialMedia} 
-                iconSize="md"
+                socialMedia={socialMedia}
               />
             </div>
           )}
