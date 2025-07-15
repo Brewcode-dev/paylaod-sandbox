@@ -148,5 +148,25 @@ export const ApiSyncConfig: GlobalConfig = {
         return data
       },
     ],
+    afterChange: [
+      async ({ doc, req }) => {
+        // Aktualizuj statystyki synchronizacji po zmianie konfiguracji
+        try {
+          const { payload } = req
+          
+          // Aktualizuj global z informacjami o ostatniej synchronizacji
+          await payload.updateGlobal({
+            slug: 'api-sync-config',
+            data: {
+              ...doc,
+              lastSync: doc.lastSync || new Date(),
+              lastSyncStatus: doc.lastSyncStatus || 'never',
+            },
+          })
+        } catch (error) {
+          console.error('Failed to update sync stats:', error)
+        }
+      },
+    ],
   },
 } 

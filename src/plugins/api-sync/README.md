@@ -1,6 +1,6 @@
 # API Sync Plugin dla Payload CMS
 
-Plugin do synchronizacji danych z zewnętrznego JSON API z obsługą JWT Bearer token.
+Plugin do synchronizacji danych z zewnętrznego JSON API z obsługą JWT Bearer token i **dynamiczną konfiguracją z admina**.
 
 ## 🚀 Funkcjonalności
 
@@ -11,12 +11,14 @@ Plugin do synchronizacji danych z zewnętrznego JSON API z obsługą JWT Bearer 
 - **Transformacja danych** z możliwością customizacji
 - **Obsługa błędów** i retry logic
 - **API endpoints** do ręcznej synchronizacji
+- **🆕 Dynamiczna konfiguracja z admina** - wszystkie ustawienia można zmieniać przez panel administracyjny
 
 ## 📋 Wymagania
 
 - Payload CMS 3.x
 - Node.js 18+
 - Kolekcja `bookings` w Payload
+- Global `api-sync-config` (tworzony automatycznie)
 
 ## 🔧 Instalacja
 
@@ -31,13 +33,13 @@ export default buildConfig({
   plugins: [
     // ... inne pluginy
     apiSyncPlugin({
-      apiUrl: process.env.API_BASE_URL || 'https://api.example.com',
-      endpoint: 'api/v1/Bookings/GetBookingsByContractor',
+      apiUrl: process.env.API_BASE_URL || 'https://api.example.com', // Fallback URL
+      endpoint: 'api/v1/Bookings/GetBookingsByContractor', // Fallback endpoint
       collectionName: 'bookings',
-      autoSync: false,
-      syncInterval: 300000, // 5 minut
-      retryAttempts: 3,
-      retryDelay: 1000,
+      autoSync: false, // Będzie ładowane z admina
+      syncInterval: 300000, // Będzie ładowane z admina
+      retryAttempts: 3, // Będzie ładowane z admina
+      retryDelay: 1000, // Będzie ładowane z admina
       onError: (error: Error) => {
         console.error('API Sync Error:', error)
       },
@@ -70,50 +72,31 @@ export default buildConfig({
 })
 ```
 
-## ⚙️ Konfiguracja
+## ⚙️ Konfiguracja przez Admin
 
-### Parametry pluginu:
+**🆕 Nowość:** Wszystkie ustawienia można teraz konfigurować przez panel administracyjny!
 
-- **`apiUrl`** (string, wymagane): URL bazowy API
-- **`endpoint`** (string, wymagane): Endpoint API (np. `api/v1/Bookings/GetBookingsByContractor`)
-- **`collectionName`** (string, wymagane): Nazwa kolekcji w Payload
-- **`jwtToken`** (string, opcjonalne): JWT Bearer token
-- **`headers`** (object, opcjonalne): Dodatkowe nagłówki HTTP
-- **`autoSync`** (boolean, opcjonalne): Włącz automatyczną synchronizację
-- **`syncInterval`** (number, opcjonalne): Interwał synchronizacji w ms
-- **`fieldMapping`** (object, opcjonalne): Mapowanie pól API → Payload
-- **`transformData`** (function, opcjonalne): Funkcja transformacji danych
-- **`onError`** (function, opcjonalne): Callback dla błędów
-- **`retryAttempts`** (number, opcjonalne): Liczba prób retry
-- **`retryDelay`** (number, opcjonalne): Opóźnienie między próbami w ms
+### Dostęp do konfiguracji:
 
-### Przykład konfiguracji:
+1. **Zaloguj się do admina** (`/admin`)
+2. **Przejdź do "API Sync"** w menu bocznym
+3. **Skonfiguruj ustawienia:**
+   - **API URL** - URL bazowy API
+   - **Endpoint** - Endpoint do synchronizacji
+   - **JWT Token** - Token autoryzacji
+   - **Auto Sync** - Włącz/wyłącz automatyczną synchronizację
+   - **Sync Interval** - Interwał synchronizacji (w milisekundach)
+   - **Retry Attempts** - Liczba prób retry
+   - **Retry Delay** - Opóźnienie między próbami
 
-```typescript
-apiSyncPlugin({
-  apiUrl: 'https://api.example.com',
-  endpoint: 'api/v1/Bookings/GetBookingsByContractor',
-  collectionName: 'bookings',
-  jwtToken: process.env.API_JWT_TOKEN,
-  autoSync: true,
-  syncInterval: 300000, // 5 minut
-  fieldMapping: {
-    id: 'externalId',
-    contractor_id: 'contractorId',
-    booking_date: 'bookingDate',
-    booking_status: 'status',
-  },
-  transformData: (data) => ({
-    ...data,
-    bookingDate: new Date(data.booking_date),
-    status: data.booking_status.toLowerCase(),
-  }),
-  onError: (error) => {
-    console.error('Sync error:', error)
-    // Wyślij powiadomienie email/Slack
-  },
-})
-```
+### Automatyczne ładowanie konfiguracji:
+
+Plugin automatycznie:
+
+- ✅ Ładuje konfigurację z admina przy starcie
+- ✅ Aktualizuje konfigurację przed każdą synchronizacją
+- ✅ Synchronizuje zmiany z admina z serwisami synchronizacji
+- ✅ Zachowuje statystyki synchronizacji w adminie
 
 ## 🔌 API Endpoints
 
@@ -124,6 +107,8 @@ Plugin udostępnia następujące endpointy:
 ```
 POST /api/next/api-sync/sync
 ```
+
+**Uwaga:** Endpoint automatycznie ładuje najnowszą konfigurację z admina.
 
 ### 2. Synchronizacja rezerwacji dla konkretnego kontrahenta
 
@@ -142,11 +127,38 @@ Content-Type: application/json
 }
 ```
 
+**Uwaga:** Token jest aktualizowany zarówno w serwisie synchronizacji jak i w adminie.
+
 ### 4. Sprawdzenie statusu synchronizacji
 
 ```
 GET /api/next/api-sync/status
 ```
+
+**Zwraca:**
+
+- Status serwisów synchronizacji
+- Konfigurację z admina (bez JWT tokena)
+- Statystyki synchronizacji
+
+### 5. Aktualizacja konfiguracji
+
+```
+POST /api/next/api-sync/update-config
+Content-Type: application/json
+
+{
+  "apiUrl": "https://api.example.com",
+  "endpoint": "api/v1/Bookings/GetBookingsByContractor",
+  "jwtToken": "your-jwt-token",
+  "autoSync": true,
+  "syncInterval": 300000,
+  "retryAttempts": 3,
+  "retryDelay": 1000
+}
+```
+
+**Uwaga:** Konfiguracja jest aktualizowana zarówno w adminie jak i w serwisach synchronizacji.
 
 ## 📊 Struktura danych
 
@@ -160,6 +172,24 @@ GET /api/next/api-sync/status
   status: string,          // Status rezerwacji
   lastSynced: Date,        // Ostatnia synchronizacja
   rawData: object,         // Surowe dane z API
+}
+```
+
+### Global ApiSyncConfig:
+
+```typescript
+{
+  apiUrl: string,          // URL bazowy API
+  endpoint: string,        // Endpoint API
+  jwtToken: string,        // JWT Bearer token
+  autoSync: boolean,       // Automatyczna synchronizacja
+  syncInterval: number,    // Interwał synchronizacji
+  retryAttempts: number,   // Liczba prób retry
+  retryDelay: number,      // Opóźnienie między próbami
+  lastSync: Date,          // Ostatnia synchronizacja
+  lastSyncStatus: string,  // Status ostatniej synchronizacji
+  lastSyncError: string,   // Ostatni błąd synchronizacji
+  syncStats: object,       // Statystyki synchronizacji
 }
 ```
 
@@ -196,20 +226,15 @@ Plugin automatycznie obsługuje:
 - Błędy autoryzacji API
 - Błędy parsowania danych
 - Błędy zapisu do bazy danych
+- Błędy ładowania konfiguracji z admina
 
 Błędy są logowane i można je obsłużyć przez callback `onError`.
 
 ## 🔄 Automatyczna synchronizacja
 
-Jeśli `autoSync` jest włączone, plugin będzie automatycznie synchronizować dane co `syncInterval` milisekund.
+Jeśli `autoSync` jest włączone w adminie, plugin będzie automatycznie synchronizować dane co `syncInterval` milisekund.
 
-```typescript
-apiSyncPlugin({
-  // ...
-  autoSync: true,
-  syncInterval: 300000, // 5 minut
-})
-```
+**Uwaga:** Konfiguracja jest automatycznie ładowana z admina przed każdą synchronizacją.
 
 ## 🛠️ Rozszerzanie
 
@@ -245,22 +270,57 @@ API_BASE_URL=https://api.example.com
 API_JWT_TOKEN=your-jwt-token-here
 ```
 
+**Uwaga:** Te zmienne są używane tylko jako fallback. Główna konfiguracja pochodzi z admina.
+
 ## 🔍 Debugowanie
 
 Włącz logi debugowania:
 
-```typescript
-onError: (error: Error) => {
-  console.error('API Sync Error:', error)
-  // Dodaj własną logikę debugowania
-}
+```bash
+# Sprawdź logi aplikacji
+npm run dev 2>&1 | grep "API Sync"
+
+# Sprawdź status
+curl -X GET http://localhost:3000/api/next/api-sync/status \
+  -H "Authorization: Bearer your-payload-token"
 ```
+
+## 🚀 Szybki start
+
+1. **Uruchom aplikację:**
+
+   ```bash
+   npm run dev
+   ```
+
+2. **Przejdź do admina:**
+
+   ```
+   http://localhost:3000/admin
+   ```
+
+3. **Skonfiguruj API Sync:**
+   - Przejdź do "API Sync" w menu
+   - Wprowadź URL API i endpoint
+   - Dodaj JWT token
+   - Włącz auto-sync jeśli potrzebne
+
+4. **Przetestuj synchronizację:**
+   ```bash
+   curl -X POST http://localhost:3000/api/next/api-sync/sync \
+     -H "Authorization: Bearer your-payload-token"
+   ```
 
 ## 📞 Wsparcie
 
 W przypadku problemów:
 
-1. Sprawdź logi serwera
+1. Sprawdź logi aplikacji
 2. Sprawdź status endpoint `/api/next/api-sync/status`
-3. Sprawdź konfigurację API i JWT token
+3. Sprawdź konfigurację w adminie
 4. Sprawdź strukturę danych w kolekcji Bookings
+5. Sprawdź czy wszystkie pliki są poprawnie utworzone
+
+---
+
+**🆕 Nowość:** Plugin teraz automatycznie ładuje konfigurację z admina, co oznacza, że możesz zmieniać wszystkie ustawienia bez restartowania aplikacji!

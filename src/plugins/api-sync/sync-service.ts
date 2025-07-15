@@ -320,4 +320,10 @@ export class SyncService {
     this.config.jwtToken = token
     this.apiClient.updateJwtToken(token)
   }
+
+  // Update configuration dynamically
+  updateConfig(newConfig: ApiSyncConfig): void {
+    this.config = { ...this.config, ...newConfig }
+    this.apiClient.updateJwtToken(newConfig.jwtToken || '')
+  }
 } 

@@ -83,13 +83,13 @@ export default buildConfig({
   plugins: [
     ...plugins,
     apiSyncPlugin({
-      apiUrl: process.env.API_BASE_URL || 'https://api.example.com',
-      endpoint: 'api/v1/Bookings/GetBookingsByContractor',
+      apiUrl: process.env.API_BASE_URL || 'https://api.example.com', // Fallback URL
+      endpoint: 'api/v1/Bookings/GetBookingsByContractor', // Fallback endpoint
       collectionName: 'bookings',
-      autoSync: false, // Disable auto-sync by default
-      syncInterval: 300000, // 5 minutes
-      retryAttempts: 3,
-      retryDelay: 1000,
+      autoSync: false, // Will be loaded from admin
+      syncInterval: 300000, // Will be loaded from admin
+      retryAttempts: 3, // Will be loaded from admin
+      retryDelay: 1000, // Will be loaded from admin
       onError: (error: Error) => {
         console.error('API Sync Error:', error)
       },
@@ -98,10 +98,10 @@ export default buildConfig({
       apiUrl: 'https://jsonplaceholder.typicode.com',
       endpoint: 'photos',
       collectionName: 'photos',
-      autoSync: false, // Disable auto-sync by default
-      syncInterval: 300000, // 5 minutes
-      retryAttempts: 3,
-      retryDelay: 1000,
+      autoSync: false, // Will be loaded from admin
+      syncInterval: 300000, // Will be loaded from admin
+      retryAttempts: 3, // Will be loaded from admin
+      retryDelay: 1000, // Will be loaded from admin
       onError: (error: Error) => {
         console.error('Photos API Sync Error:', error)
       },

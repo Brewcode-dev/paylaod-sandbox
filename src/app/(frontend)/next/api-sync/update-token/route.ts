@@ -28,14 +28,34 @@ export async function POST(request: Request): Promise<Response> {
       })
     }
 
+    // Update sync service JWT token
     const syncService = getSyncService('bookings')
     if (syncService) {
       syncService.updateJwtToken(token)
     }
 
+    // Update global settings in admin
+    try {
+      const globalSettings = await payload.findGlobal({
+        slug: 'api-sync-config',
+      })
+
+      if (globalSettings) {
+        await payload.updateGlobal({
+          slug: 'api-sync-config',
+          data: {
+            ...globalSettings,
+            jwtToken: token,
+          },
+        })
+      }
+    } catch (error) {
+      console.error('Failed to update global settings:', error)
+    }
+
     return Response.json({
       success: true,
-      message: 'JWT token updated successfully',
+      message: 'JWT token updated successfully in both sync service and admin settings',
     })
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'

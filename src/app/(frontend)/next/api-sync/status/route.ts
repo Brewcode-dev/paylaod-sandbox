@@ -18,6 +18,16 @@ export async function GET(): Promise<Response> {
     const bookingsService = getSyncService('bookings')
     const photosService = getSyncService('photos')
     
+    // Load configuration from admin
+    let adminConfig = null
+    try {
+      adminConfig = await payload.findGlobal({
+        slug: 'api-sync-config',
+      })
+    } catch (error) {
+      console.error('Failed to load admin config:', error)
+    }
+    
     return Response.json({
       success: true,
       data: {
@@ -26,7 +36,19 @@ export async function GET(): Promise<Response> {
           bookings: bookingsService !== null,
           photos: photosService !== null,
         },
-        // Note: config details are not exposed for security
+        adminConfig: adminConfig ? {
+          apiUrl: adminConfig.apiUrl,
+          endpoint: adminConfig.endpoint,
+          autoSync: adminConfig.autoSync,
+          syncInterval: adminConfig.syncInterval,
+          retryAttempts: adminConfig.retryAttempts,
+          retryDelay: adminConfig.retryDelay,
+          lastSync: adminConfig.lastSync,
+          lastSyncStatus: adminConfig.lastSyncStatus,
+          lastSyncError: adminConfig.lastSyncError,
+          syncStats: adminConfig.syncStats,
+          // Don't expose JWT token for security
+        } : null,
         serviceAvailable: bookingsService !== null && photosService !== null,
       },
     })
