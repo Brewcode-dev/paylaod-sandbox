@@ -14,6 +14,7 @@ import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
 import { GoogleAnalytics } from '@/components/GoogleAnalytics'
 import { MetaTags } from '@/components/MetaTags'
+import WcagToggle from '@/components/WcagToggle'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -39,6 +40,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Header />
           {children}
           <Footer />
+          <WcagToggle />
         </Providers>
       </body>
     </html>

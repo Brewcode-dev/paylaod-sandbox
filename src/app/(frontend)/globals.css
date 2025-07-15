@@ -101,3 +101,6 @@ html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
 }
+
+/* WCAG Accessibility Styles */
+@import '../../components/WcagToggle.css';
