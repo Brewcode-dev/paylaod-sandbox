@@ -5,43 +5,45 @@ import config from '@payload-config'
 export async function GET(_request: NextRequest) {
   try {
     const payload = await getPayload({ config })
-    
-    const globalSettings = await payload.find({
-      collection: 'globalSettings',
-      limit: 1,
-      sort: '-createdAt',
-    })
 
-    if (!globalSettings.docs || globalSettings.docs.length === 0) {
-      return NextResponse.json(
-        { error: 'No global settings found' },
-        { status: 404 }
-      )
+    const globalSettings = (await payload.findGlobal({
+      slug: 'globalSettings',
+    })) as any
+
+    if (!globalSettings) {
+      return NextResponse.json({ error: 'No global settings found' }, { status: 404 })
     }
-
-    const settings = globalSettings.docs[0]
 
     // Populate media fields if they exist
-    if (settings.logo && typeof settings.logo === 'object') {
-      settings.logo = await payload.findByID({
+    if (globalSettings.logo && typeof globalSettings.logo === 'object' && globalSettings.logo.id) {
+      globalSettings.logo = await payload.findByID({
         collection: 'media',
-        id: settings.logo.id,
+        id: globalSettings.logo.id,
       })
     }
 
-    if (settings.favicon && typeof settings.favicon === 'object') {
-      settings.favicon = await payload.findByID({
+    if (
+      globalSettings.favicon &&
+      typeof globalSettings.favicon === 'object' &&
+      globalSettings.favicon.id
+    ) {
+      globalSettings.favicon = await payload.findByID({
         collection: 'media',
-        id: settings.favicon.id,
+        id: globalSettings.favicon.id,
       })
     }
 
-    return NextResponse.json(settings)
+    const response = NextResponse.json(globalSettings)
+    
+    // Add cache control headers to prevent caching
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+    response.headers.set('Surrogate-Control', 'no-store')
+    
+    return response
   } catch (error) {
     console.error('Error fetching global settings:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 } 

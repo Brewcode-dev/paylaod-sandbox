@@ -3,19 +3,18 @@ import type { Payload } from 'payload'
 export const seedGlobalSettings = async (payload: Payload): Promise<void> => {
   try {
     // Check if global settings already exist
-    const existingSettings = await payload.find({
-      collection: 'globalSettings',
-      limit: 1,
+    const existingSettings = await payload.findGlobal({
+      slug: 'globalSettings',
     })
 
-    if (existingSettings.docs.length > 0) {
+    if (existingSettings) {
       console.log('Global settings already exist, skipping seed')
       return
     }
 
     // Create default global settings
-    await payload.create({
-      collection: 'globalSettings',
+    await payload.updateGlobal({
+      slug: 'globalSettings',
       data: {
         siteName: 'Moja Strona',
         siteDescription: 'Nowoczesna strona internetowa stworzona z Payload CMS',

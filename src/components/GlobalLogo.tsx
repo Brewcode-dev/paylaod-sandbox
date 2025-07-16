@@ -22,20 +22,22 @@ export const GlobalLogo: React.FC<GlobalLogoProps> = ({
 }) => {
   const { settings, loading: settingsLoading, error } = useGlobalSettings()
 
+  // Show loading state
   if (settingsLoading) {
     return (
       <div 
-        className={`animate-pulse bg-gray-200 rounded ${className}`}
+        className={`animate-pulse bg-gray-200 rounded ${className || ''}`}
         style={{ width: `${width}px`, height: `${height}px` }}
       />
     )
   }
 
+  // Log error if any
   if (error) {
     console.error('Error loading global settings:', error)
   }
 
-  // Get logo URL from settings
+  // Get logo URL and site name from settings
   let logoUrl: string | undefined
   let siteName: string | undefined
 

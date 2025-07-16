@@ -1,17 +1,9 @@
-import type { CollectionConfig } from 'payload'
+import type { GlobalConfig } from 'payload'
 
-export const GlobalSettings: CollectionConfig = {
+export const GlobalSettings: GlobalConfig = {
   slug: 'globalSettings',
   access: {
-    read: () => true, // Public read access
-    create: () => true,
-    update: () => true,
-    delete: () => true,
-  },
-  admin: {
-    group: 'Settings',
-    useAsTitle: 'siteName',
-    defaultColumns: ['siteName', 'siteDescription', 'updatedAt'],
+    read: () => true,
   },
   fields: [
     {
@@ -126,7 +118,8 @@ export const GlobalSettings: CollectionConfig = {
           type: 'text',
           label: 'LinkedIn URL',
           admin: {
-            description: 'Pełny URL do profilu LinkedIn (np. https://linkedin.com/company/mojastrona)',
+            description:
+              'Pełny URL do profilu LinkedIn (np. https://linkedin.com/company/mojastrona)',
           },
         },
         {
@@ -172,12 +165,25 @@ export const GlobalSettings: CollectionConfig = {
       ],
     },
   ],
-  versions: {
-    drafts: {
-      autosave: {
-        interval: 100,
+  hooks: {
+    afterChange: [
+      async ({ doc, req }) => {
+        console.log('Global settings updated:', doc.id)
+        
+        // Clear client-side cache
+        if (req?.headers) {
+          try {
+            // Invalidate Next.js cache
+            await fetch(`${req.headers.get('origin') || 'http://localhost:3000'}/api/revalidate?secret=globalSettings&path=/`, {
+              method: 'POST',
+            })
+          } catch (error) {
+            console.error('Error invalidating cache:', error)
+          }
+        }
+        
+        return doc
       },
-    },
-    maxPerDoc: 10,
+    ],
   },
 } 

@@ -74,7 +74,6 @@ export interface Config {
     users: User;
     bookings: Booking;
     photos: Photo;
-    globalSettings: GlobalSetting;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -93,7 +92,6 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     bookings: BookingsSelect<false> | BookingsSelect<true>;
     photos: PhotosSelect<false> | PhotosSelect<true>;
-    globalSettings: GlobalSettingsSelect<false> | GlobalSettingsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -110,11 +108,13 @@ export interface Config {
     header: Header;
     footer: Footer;
     'api-sync-config': ApiSyncConfig;
+    globalSettings: GlobalSetting;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     'api-sync-config': ApiSyncConfigSelect<false> | ApiSyncConfigSelect<true>;
+    globalSettings: GlobalSettingsSelect<false> | GlobalSettingsSelect<true>;
   };
   locale: null;
   user: User & {
@@ -830,75 +830,6 @@ export interface Photo {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "globalSettings".
- */
-export interface GlobalSetting {
-  id: number;
-  /**
-   * Główna nazwa strony wyświetlana w przeglądarce i SEO
-   */
-  siteName: string;
-  /**
-   * Krótki opis strony używany w meta tagach
-   */
-  siteDescription?: string | null;
-  /**
-   * Główne logo strony (zalecane: PNG, SVG)
-   */
-  logo?: (number | null) | Media;
-  /**
-   * Ikona strony wyświetlana w zakładce przeglądarki (zalecane: ICO, PNG)
-   */
-  favicon?: (number | null) | Media;
-  googleAnalytics?: {
-    /**
-     * ID śledzenia Google Analytics 4 (format: G-XXXXXXXXXX)
-     */
-    trackingId?: string | null;
-    enabled?: boolean | null;
-  };
-  contact?: {
-    email?: string | null;
-    phone?: string | null;
-    address?: string | null;
-  };
-  socialMedia?: {
-    /**
-     * Pełny URL do profilu Facebook (np. https://facebook.com/mojastrona)
-     */
-    facebook?: string | null;
-    /**
-     * Pełny URL do profilu Twitter/X (np. https://twitter.com/mojastrona)
-     */
-    twitter?: string | null;
-    /**
-     * Pełny URL do profilu Instagram (np. https://instagram.com/mojastrona)
-     */
-    instagram?: string | null;
-    /**
-     * Pełny URL do profilu LinkedIn (np. https://linkedin.com/company/mojastrona)
-     */
-    linkedin?: string | null;
-    /**
-     * Pełny URL do kanału YouTube (np. https://youtube.com/@mojastrona)
-     */
-    youtube?: string | null;
-    /**
-     * Pełny URL do profilu GitHub (np. https://github.com/mojastrona)
-     */
-    github?: string | null;
-  };
-  footer?: {
-    copyrightText?: string | null;
-    footerText?: string | null;
-    showSocialMedia?: boolean | null;
-  };
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1097,10 +1028,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'photos';
         value: number | Photo;
-      } | null)
-    | ({
-        relationTo: 'globalSettings';
-        value: number | GlobalSetting;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1497,49 +1424,6 @@ export interface PhotosSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "globalSettings_select".
- */
-export interface GlobalSettingsSelect<T extends boolean = true> {
-  siteName?: T;
-  siteDescription?: T;
-  logo?: T;
-  favicon?: T;
-  googleAnalytics?:
-    | T
-    | {
-        trackingId?: T;
-        enabled?: T;
-      };
-  contact?:
-    | T
-    | {
-        email?: T;
-        phone?: T;
-        address?: T;
-      };
-  socialMedia?:
-    | T
-    | {
-        facebook?: T;
-        twitter?: T;
-        instagram?: T;
-        linkedin?: T;
-        youtube?: T;
-        github?: T;
-      };
-  footer?:
-    | T
-    | {
-        copyrightText?: T;
-        footerText?: T;
-        showSocialMedia?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects_select".
  */
 export interface RedirectsSelect<T extends boolean = true> {
@@ -1925,6 +1809,74 @@ export interface ApiSyncConfig {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "globalSettings".
+ */
+export interface GlobalSetting {
+  id: number;
+  /**
+   * Główna nazwa strony wyświetlana w przeglądarce i SEO
+   */
+  siteName: string;
+  /**
+   * Krótki opis strony używany w meta tagach
+   */
+  siteDescription?: string | null;
+  /**
+   * Główne logo strony (zalecane: PNG, SVG)
+   */
+  logo?: (number | null) | Media;
+  /**
+   * Ikona strony wyświetlana w zakładce przeglądarki (zalecane: ICO, PNG)
+   */
+  favicon?: (number | null) | Media;
+  googleAnalytics?: {
+    /**
+     * ID śledzenia Google Analytics 4 (format: G-XXXXXXXXXX)
+     */
+    trackingId?: string | null;
+    enabled?: boolean | null;
+  };
+  contact?: {
+    email?: string | null;
+    phone?: string | null;
+    address?: string | null;
+  };
+  socialMedia?: {
+    /**
+     * Pełny URL do profilu Facebook (np. https://facebook.com/mojastrona)
+     */
+    facebook?: string | null;
+    /**
+     * Pełny URL do profilu Twitter/X (np. https://twitter.com/mojastrona)
+     */
+    twitter?: string | null;
+    /**
+     * Pełny URL do profilu Instagram (np. https://instagram.com/mojastrona)
+     */
+    instagram?: string | null;
+    /**
+     * Pełny URL do profilu LinkedIn (np. https://linkedin.com/company/mojastrona)
+     */
+    linkedin?: string | null;
+    /**
+     * Pełny URL do kanału YouTube (np. https://youtube.com/@mojastrona)
+     */
+    youtube?: string | null;
+    /**
+     * Pełny URL do profilu GitHub (np. https://github.com/mojastrona)
+     */
+    github?: string | null;
+  };
+  footer?: {
+    copyrightText?: string | null;
+    footerText?: string | null;
+    showSocialMedia?: boolean | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -1991,6 +1943,49 @@ export interface ApiSyncConfigSelect<T extends boolean = true> {
         lastRecordsProcessed?: T;
         lastRecordsCreated?: T;
         lastRecordsUpdated?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "globalSettings_select".
+ */
+export interface GlobalSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  siteDescription?: T;
+  logo?: T;
+  favicon?: T;
+  googleAnalytics?:
+    | T
+    | {
+        trackingId?: T;
+        enabled?: T;
+      };
+  contact?:
+    | T
+    | {
+        email?: T;
+        phone?: T;
+        address?: T;
+      };
+  socialMedia?:
+    | T
+    | {
+        facebook?: T;
+        twitter?: T;
+        instagram?: T;
+        linkedin?: T;
+        youtube?: T;
+        github?: T;
+      };
+  footer?:
+    | T
+    | {
+        copyrightText?: T;
+        footerText?: T;
+        showSocialMedia?: T;
       };
   updatedAt?: T;
   createdAt?: T;

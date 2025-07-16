@@ -10,6 +10,7 @@ import { post1 } from './post-1'
 import { post2 } from './post-2'
 import { post3 } from './post-3'
 import { seedGlobalSettings } from './global-settings'
+
 import { seedApiSyncConfig } from './api-sync-config'
 
 const collections: CollectionSlug[] = [
@@ -339,7 +340,7 @@ export const seed = async ({
     }),
   ])
 
-  payload.logger.info(`— Seeding global settings...`)
+    payload.logger.info(`— Seeding global settings...`)
 
   await seedGlobalSettings(payload)
 

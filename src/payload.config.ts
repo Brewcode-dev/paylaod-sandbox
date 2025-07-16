@@ -13,9 +13,10 @@ import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 import { Bookings } from './collections/Bookings'
 import { Photos } from './collections/Photos'
-import { GlobalSettings } from './collections/GlobalSettings'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
+import { GlobalSettings } from './globals/GlobalSettings'
+
 import { plugins } from './plugins'
 import { apiSyncPlugin } from './plugins/api-sync'
 import { ApiSyncConfig } from './globals/ApiSyncConfig'
@@ -73,13 +74,10 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Bookings, Photos, GlobalSettings],
+  collections: [Pages, Posts, Media, Categories, Users, Bookings, Photos],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer, ApiSyncConfig],
-  endpoints: [
-    syncBookingsEndpoint,
-    syncPhotosEndpoint,
-  ],
+  globals: [Header, Footer, ApiSyncConfig, GlobalSettings],
+  endpoints: [syncBookingsEndpoint, syncPhotosEndpoint],
   plugins: [
     ...plugins,
     apiSyncPlugin({

@@ -12,9 +12,8 @@ import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
-import { GoogleAnalytics } from '@/components/GoogleAnalytics'
-import { MetaTags } from '@/components/MetaTags'
 import WcagToggle from '@/components/WcagToggle'
+import { getGlobalSettings } from '@/utilities/getGlobalSettings'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -26,8 +25,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
         <InitTheme />
-        <MetaTags />
-        <GoogleAnalytics />
       </head>
       <body>
         <Providers>
@@ -48,52 +45,62 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 }
 
 export async function generateMetadata(): Promise<Metadata> {
+  const globalSettings = await getGlobalSettings()
+  
   // Get favicon from global settings
   let faviconUrl: string | undefined
-  try {
-    const { getPayload } = await import('payload')
-    const config = await import('@payload-config')
-    const payload = await getPayload({ config: config.default })
-    
-    const globalSettings = await payload.find({
-      collection: 'globalSettings',
-      limit: 1,
-      sort: '-createdAt',
-    })
 
-    console.log('Global settings found:', globalSettings.docs?.length || 0)
+  if (globalSettings) {
+    const favicon = globalSettings.favicon
 
-    if (globalSettings.docs && globalSettings.docs.length > 0) {
-      const settings = globalSettings.docs[0]
-      const favicon = settings.favicon
-
-      console.log('Favicon from settings:', favicon)
-
-      if (favicon && typeof favicon === 'object' && 'url' in favicon && favicon.url) {
-        const filename = favicon.url.split('/').pop()
-        console.log('Filename:', filename)
-        if (filename) {
-          const { getMediaUrl } = await import('@/utilities/getMediaUrl')
-          faviconUrl = getMediaUrl(`/media/${filename}`, favicon.updatedAt)
-          console.log('Generated favicon URL:', faviconUrl)
+    if (favicon && typeof favicon === 'object') {
+      if ('url' in favicon && favicon.url) {
+        // If favicon has direct URL (from API)
+        const { getMediaUrl } = await import('@/utilities/getMediaUrl')
+        faviconUrl = getMediaUrl(favicon.url, favicon.updatedAt)
+      } else if ('id' in favicon && favicon.id) {
+        // If favicon has ID, populate it
+        try {
+          const { getPayload } = await import('payload')
+          const config = await import('@payload-config')
+          const payload = await getPayload({ config: config.default })
+          
+          const populatedFavicon = await payload.findByID({
+            collection: 'media',
+            id: favicon.id,
+          })
+          if (populatedFavicon && 'url' in populatedFavicon && populatedFavicon.url) {
+            const { getMediaUrl } = await import('@/utilities/getMediaUrl')
+            faviconUrl = getMediaUrl(populatedFavicon.url, populatedFavicon.updatedAt)
+          }
+        } catch (error) {
+          console.error('Error populating favicon:', error)
         }
       }
     }
-  } catch (error) {
-    console.error('Error fetching favicon:', error)
-  }
 
+    // Fallback to static favicon if not found in global settings
+    if (!faviconUrl) {
+      faviconUrl = '/favicon.ico'
+    }
+  }
+  
   return {
+    title: globalSettings?.siteName || 'Payload Website Template',
+    description: globalSettings?.siteDescription || 'An open-source website built with Payload and Next.js.',
     metadataBase: new URL(getServerSideURL()),
-    openGraph: mergeOpenGraph(),
+    openGraph: await mergeOpenGraph(),
     twitter: {
       card: 'summary_large_image',
       creator: '@payloadcms',
     },
-    icons: faviconUrl ? {
-      icon: faviconUrl,
-      shortcut: faviconUrl,
-      apple: faviconUrl,
-    } : undefined,
+    icons: faviconUrl
+      ? {
+          icon: faviconUrl,
+          shortcut: faviconUrl,
+          apple: faviconUrl,
+        }
+      : undefined,
   }
 }
+
