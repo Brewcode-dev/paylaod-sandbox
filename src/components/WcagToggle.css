@@ -31,12 +31,117 @@ body.wcag__text-plus-plus {
   line-height: 2rem;
 }
 
+/* WCAG styles for prose elements - this is the key fix */
+body.wcag__text-normal .prose,
+body.wcag__text-normal .prose * {
+  font-size: 1rem !important;
+  line-height: 1.5rem !important;
+}
+
+body.wcag__text-plus .prose,
+body.wcag__text-plus .prose * {
+  font-size: 1.25rem !important;
+  line-height: 1.75rem !important;
+}
+
+body.wcag__text-plus-plus .prose,
+body.wcag__text-plus-plus .prose * {
+  font-size: 1.5rem !important;
+  line-height: 2rem !important;
+}
+
+/* Specific prose element overrides */
+body.wcag__text-normal .prose h1,
+body.wcag__text-normal .prose h2,
+body.wcag__text-normal .prose h3,
+body.wcag__text-normal .prose h4,
+body.wcag__text-normal .prose h5,
+body.wcag__text-normal .prose h6 {
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
+body.wcag__text-plus .prose h1 {
+  font-size: 3.5rem !important;
+  line-height: 1.1 !important;
+}
+
+body.wcag__text-plus .prose h2 {
+  font-size: 2.5rem !important;
+  line-height: 1.2 !important;
+}
+
+body.wcag__text-plus .prose h3 {
+  font-size: 2rem !important;
+  line-height: 1.3 !important;
+}
+
+body.wcag__text-plus .prose h4 {
+  font-size: 1.5rem !important;
+  line-height: 1.4 !important;
+}
+
+body.wcag__text-plus .prose h5 {
+  font-size: 1.25rem !important;
+  line-height: 1.5 !important;
+}
+
+body.wcag__text-plus .prose h6 {
+  font-size: 1.125rem !important;
+  line-height: 1.6 !important;
+}
+
+body.wcag__text-plus-plus .prose h1 {
+  font-size: 4rem !important;
+  line-height: 1.1 !important;
+}
+
+body.wcag__text-plus-plus .prose h2 {
+  font-size: 3rem !important;
+  line-height: 1.2 !important;
+}
+
+body.wcag__text-plus-plus .prose h3 {
+  font-size: 2.5rem !important;
+  line-height: 1.3 !important;
+}
+
+body.wcag__text-plus-plus .prose h4 {
+  font-size: 2rem !important;
+  line-height: 1.4 !important;
+}
+
+body.wcag__text-plus-plus .prose h5 {
+  font-size: 1.5rem !important;
+  line-height: 1.5 !important;
+}
+
+body.wcag__text-plus-plus .prose h6 {
+  font-size: 1.25rem !important;
+  line-height: 1.6 !important;
+}
+
 /* High contrast mode */
 body.wcag__contrast {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
   --tw-text-opacity: 1;
   color: rgb(250 204 21 / var(--tw-text-opacity));
+}
+
+/* High contrast for prose elements */
+body.wcag__contrast .prose,
+body.wcag__contrast .prose * {
+  color: rgb(250 204 21 / var(--tw-text-opacity)) !important;
+}
+
+body.wcag__contrast .prose a {
+  color: rgb(250 204 21 / var(--tw-text-opacity)) !important;
+}
+
+body.wcag__contrast .prose strong,
+body.wcag__contrast .prose b {
+  color: rgb(250 204 21 / var(--tw-text-opacity)) !important;
 }
 
 body.wcag__contrast .aside-wcag__toggle,
