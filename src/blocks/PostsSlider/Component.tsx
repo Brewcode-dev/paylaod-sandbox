@@ -89,6 +89,7 @@ export const PostsSliderBlock: React.FC<Props> = ({
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const swiperRef = useRef<any>(null)
+  const sliderId = useRef(`posts-slider-${Math.random().toString(36).substr(2, 9)}`)
 
   // Fetch posts based on selection method
   useEffect(() => {
@@ -190,12 +191,12 @@ export const PostsSliderBlock: React.FC<Props> = ({
       disableOnInteraction: false,
     } : false,
     navigation: slider?.nav ? {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
+      nextEl: `.${sliderId.current}-next`,
+      prevEl: `.${sliderId.current}-prev`,
     } : false,
     pagination: slider?.pagination ? {
       clickable: true,
-      el: '.swiper-pagination',
+      el: `.${sliderId.current}-pagination`,
     } : false,
     breakpoints: {
       640: {
@@ -362,12 +363,12 @@ export const PostsSliderBlock: React.FC<Props> = ({
         {/* Custom Navigation Buttons */}
         {slider?.nav && (
           <>
-            <button className="swiper-button-prev absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-3 transition-all duration-300 shadow-lg">
+            <button className={`${sliderId.current}-prev swiper-button-prev absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-3 transition-all duration-300 shadow-lg`}>
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <button className="swiper-button-next absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-3 transition-all duration-300 shadow-lg">
+            <button className={`${sliderId.current}-next swiper-button-next absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-3 transition-all duration-300 shadow-lg`}>
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
@@ -377,7 +378,7 @@ export const PostsSliderBlock: React.FC<Props> = ({
         
         {/* Custom Pagination */}
         {slider?.pagination && (
-          <div className="swiper-pagination absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20" />
+          <div className={`${sliderId.current}-pagination swiper-pagination absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20`} />
         )}
       </div>
     </div>

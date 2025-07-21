@@ -1,6 +1,6 @@
 # CollectionSlider Block
 
-A universal content block for Payload CMS that creates beautiful, responsive sliders displaying items from any collection with dynamic field mapping.
+A universal content block for Payload CMS that creates beautiful, responsive sliders displaying items from any collection with dynamic field mapping and isolated navigation controls.
 
 ## Features
 
@@ -12,6 +12,9 @@ A universal content block for Payload CMS that creates beautiful, responsive sli
 - 🎨 Multiple card styles and themes
 - 📱 Mobile-friendly design
 - 🔗 Automatic linking to item pages
+- 🚫 **Isolated navigation** - no conflicts with other sliders on the same page
+- 🔧 **Smart field mapping** - automatically adapts to collection structure
+- ⚡ **Optimized performance** - stable references prevent infinite re-renders
 
 ## Supported Collections
 
@@ -19,7 +22,7 @@ A universal content block for Payload CMS that creates beautiful, responsive sli
 - **Categories** - Category listings
 - **Media** - Media library items
 - **Bookings** - Booking/reservation items
-- **Photos** - Photo gallery items
+- **Photos** - Photo gallery items (with external API sync support)
 
 ## Installation
 
@@ -112,7 +115,7 @@ The block automatically maps fields based on the selected collection:
 - Date: `publishedAt`
 - Image: `heroImage`
 - Slug: `slug`
-- Content: `content` (rich text)
+- Content: `content` (rich text with Lexical editor support)
 
 ### Categories Collection
 
@@ -141,10 +144,10 @@ The block automatically maps fields based on the selected collection:
 ### Photos Collection
 
 - Title: `title`
-- Date: `createdAt`
-- Image: `url`
-- Slug: `id`
-- Content: `description`
+- Date: `lastSynced` (from API sync)
+- Image: `url` (direct image URL)
+- Slug: `externalId` (from external API)
+- Content: `title` (fallback to title)
 
 ## API Integration
 
@@ -154,6 +157,39 @@ The block automatically fetches items from your Payload API based on the selecti
 - **Latest**: Fetches from `/api/{collection}?sort=-{dateField}&limit=X`
 - **Category**: Fetches from `/api/{collection}?where[categories][in]=CATEGORY_ID&sort=-{dateField}&limit=X`
 - **Featured**: Fetches from `/api/{collection}?where[featured][equals]=true&sort=-{dateField}&limit=X`
+
+### Special Handling for Photos Collection
+
+The Photos collection has special handling for external API data:
+
+- Direct image URLs are used for display
+- `lastSynced` field is used for date sorting
+- `externalId` is used for slug generation
+- Links point directly to image URLs
+
+## Technical Improvements
+
+### Navigation Isolation
+
+Each slider instance now has unique navigation controls:
+
+- **Unique IDs**: Each slider gets a random ID (`collection-slider-{random}`)
+- **Isolated Navigation**: Navigation buttons only control their own slider
+- **No Conflicts**: Multiple sliders on the same page work independently
+- **Custom Selectors**: Navigation uses unique CSS selectors
+
+### Performance Optimizations
+
+- **Stable References**: `collectionConfig` moved outside component to prevent re-renders
+- **Memoized Functions**: Helper functions moved outside component
+- **Efficient Fetching**: Single API call per slider instance
+- **Cleanup**: Proper cleanup of async operations
+
+### Rich Text Support
+
+- **Lexical Editor**: Full support for Payload's Lexical rich text editor
+- **Text Extraction**: Automatic extraction of plain text from rich content
+- **Fallback Handling**: Graceful fallbacks for different content types
 
 ## Adding New Collections
 
@@ -215,11 +251,25 @@ The slider works in all modern browsers that support:
 
 ## Troubleshooting
 
+### Common Issues
+
 1. **Items not loading**: Check that your collection is properly configured
 2. **Images not showing**: Verify that items have images uploaded
 3. **Category filtering not working**: Ensure categories are properly linked to items
 4. **Featured items not showing**: Add a `featured` field to your collection
 5. **Styling issues**: Verify that Tailwind CSS is properly configured
+
+### Navigation Issues (Fixed)
+
+- **Navigation affecting other sliders**: ✅ Fixed with unique IDs
+- **Pagination conflicts**: ✅ Fixed with isolated selectors
+- **Multiple sliders on same page**: ✅ Now works perfectly
+
+### Performance Issues (Fixed)
+
+- **Infinite API calls**: ✅ Fixed with stable references
+- **Component re-renders**: ✅ Fixed with proper memoization
+- **Memory leaks**: ✅ Fixed with proper cleanup
 
 ## Example Use Cases
 
@@ -228,6 +278,24 @@ The slider works in all modern browsers that support:
 - **Featured Media**: Use Media collection with "Featured Items" method
 - **Booking Showcase**: Use Bookings collection with "Manual Selection" method
 - **Category Navigation**: Use Categories collection with "Latest Items" method
+- **Photo Gallery**: Use Photos collection with external API sync
+
+## Recent Updates
+
+### v2.0 - Navigation Isolation & Performance
+
+- ✅ Fixed navigation conflicts between multiple sliders
+- ✅ Improved performance with stable references
+- ✅ Added unique IDs for each slider instance
+- ✅ Enhanced Photos collection support
+- ✅ Better error handling and fallbacks
+
+### v1.0 - Initial Release
+
+- ✅ Basic slider functionality
+- ✅ Multiple collection support
+- ✅ Dynamic field mapping
+- ✅ Configurable display options
 
 ## License
 
