@@ -199,7 +199,7 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
+  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | SwiperSliderBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -744,6 +744,39 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SwiperSliderBlock".
+ */
+export interface SwiperSliderBlock {
+  title?: string | null;
+  slides: {
+    title?: string | null;
+    description?: string | null;
+    image: number | Media;
+    link?: {
+      url?: string | null;
+      text?: string | null;
+    };
+    id?: string | null;
+  }[];
+  settings?: {
+    autoplay?: boolean | null;
+    autoplayDelay?: number | null;
+    loop?: boolean | null;
+    navigation?: boolean | null;
+    pagination?: boolean | null;
+    slidesPerView?: ('1' | '2' | '3' | '4') | null;
+    spaceBetween?: number | null;
+  };
+  styling?: {
+    height?: ('small' | 'medium' | 'large' | 'full') | null;
+    theme?: ('light' | 'dark') | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'swiperSlider';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "bookings".
  */
 export interface Booking {
@@ -1127,6 +1160,7 @@ export interface PagesSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
+        swiperSlider?: T | SwiperSliderBlockSelect<T>;
       };
   meta?:
     | T
@@ -1223,6 +1257,46 @@ export interface FormBlockSelect<T extends boolean = true> {
   form?: T;
   enableIntro?: T;
   introContent?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SwiperSliderBlock_select".
+ */
+export interface SwiperSliderBlockSelect<T extends boolean = true> {
+  title?: T;
+  slides?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        link?:
+          | T
+          | {
+              url?: T;
+              text?: T;
+            };
+        id?: T;
+      };
+  settings?:
+    | T
+    | {
+        autoplay?: T;
+        autoplayDelay?: T;
+        loop?: T;
+        navigation?: T;
+        pagination?: T;
+        slidesPerView?: T;
+        spaceBetween?: T;
+      };
+  styling?:
+    | T
+    | {
+        height?: T;
+        theme?: T;
+      };
   id?: T;
   blockName?: T;
 }
