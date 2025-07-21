@@ -256,7 +256,7 @@ export const CollectionSliderBlock: React.FC<Props> = ({
   const swiperConfig = {
     modules: [Navigation, Pagination, Autoplay],
     spaceBetween: slider?.space || 30,
-    slidesPerView: parseInt(slider?.perView || "3"),
+    slidesPerView: 3, // Fixed value since perView field is temporarily removed
     loop: slider?.loop ?? true,
     autoplay: slider?.autoplay
       ? {
@@ -274,13 +274,13 @@ export const CollectionSliderBlock: React.FC<Props> = ({
     } : false,
     breakpoints: {
       640: {
-        slidesPerView: Math.min(parseInt(slider?.perView || "3"), 2),
+        slidesPerView: 2, // Fixed value since perView field is temporarily removed
       },
       768: {
-        slidesPerView: Math.min(parseInt(slider?.perView || "3"), 3),
+        slidesPerView: 3, // Fixed value since perView field is temporarily removed
       },
       1024: {
-        slidesPerView: parseInt(slider?.perView || "3"),
+        slidesPerView: 3, // Fixed value since perView field is temporarily removed
       },
     },
   };

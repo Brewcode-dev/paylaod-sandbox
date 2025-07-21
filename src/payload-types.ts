@@ -847,7 +847,6 @@ export interface CollectionSliderBlock {
     loop?: boolean | null;
     nav?: boolean | null;
     pagination?: boolean | null;
-    perView?: ('1' | '2' | '3' | '4') | null;
     space?: number | null;
   };
   styling?: {
@@ -1458,7 +1457,6 @@ export interface CollectionSliderBlockSelect<T extends boolean = true> {
         loop?: T;
         nav?: T;
         pagination?: T;
-        perView?: T;
         space?: T;
       };
   styling?:
