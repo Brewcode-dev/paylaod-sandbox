@@ -9,6 +9,7 @@ import { FormBlock } from '../../blocks/Form/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { SwiperSlider } from '../../blocks/SwiperSlider/config'
 import { PostsSlider } from '../../blocks/PostsSlider/config'
+import { CollectionSlider } from '../../blocks/CollectionSlider/config'
 import { hero } from '@/heros/config'
 import { slugField } from '@/fields/slug'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -77,7 +78,7 @@ export const Pages: CollectionConfig<'pages'> = {
             {
               name: 'layout',
               type: 'blocks',
-              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock, SwiperSlider, PostsSlider],
+              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock, SwiperSlider, PostsSlider, CollectionSlider],
               required: true,
               admin: {
                 initCollapsed: true,

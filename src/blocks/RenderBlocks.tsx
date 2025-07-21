@@ -9,8 +9,10 @@ import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { SwiperSliderBlock } from '@/blocks/SwiperSlider/Component'
 import { PostsSliderBlock } from '@/blocks/PostsSlider/Component'
+import { CollectionSliderBlock } from '@/blocks/CollectionSlider/Component'
+import { SimpleCollectionSlider } from '@/blocks/CollectionSlider/SimpleComponent'
 
-const blockComponents = {
+const blockComponents: Record<string, React.ComponentType<any>> = {
   archive: ArchiveBlock,
   content: ContentBlock,
   cta: CallToActionBlock,
@@ -18,6 +20,8 @@ const blockComponents = {
   mediaBlock: MediaBlock,
   swiperSlider: SwiperSliderBlock,
   postsSlider: PostsSliderBlock,
+  collectionSlider: CollectionSliderBlock,
+  simpleCollectionSlider: SimpleCollectionSlider,
 }
 
 export const RenderBlocks: React.FC<{
@@ -37,12 +41,11 @@ export const RenderBlocks: React.FC<{
             const Block = blockComponents[blockType]
 
             if (Block) {
-              return (
-                <div className="my-16" key={index}>
-                  {/* @ts-expect-error there may be some mismatch between the expected types here */}
-                  <Block {...block} disableInnerContainer />
-                </div>
-              )
+                          return (
+              <div className="my-16" key={index}>
+                <Block {...block} disableInnerContainer />
+              </div>
+            )
             }
           }
           return null

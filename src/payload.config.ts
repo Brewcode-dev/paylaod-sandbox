@@ -92,18 +92,19 @@ export default buildConfig({
         console.error('API Sync Error:', error)
       },
     }),
-    apiSyncPlugin({
-      apiUrl: 'https://jsonplaceholder.typicode.com',
-      endpoint: 'photos',
-      collectionName: 'photos',
-      autoSync: false, // Will be loaded from admin
-      syncInterval: 300000, // Will be loaded from admin
-      retryAttempts: 3, // Will be loaded from admin
-      retryDelay: 1000, // Will be loaded from admin
-      onError: (error: Error) => {
-        console.error('Photos API Sync Error:', error)
-      },
-    }),
+    // Temporarily disabled Photos API sync to fix slider issues
+    // apiSyncPlugin({
+    //   apiUrl: 'https://jsonplaceholder.typicode.com',
+    //   endpoint: 'photos',
+    //   collectionName: 'photos',
+    //   autoSync: false, // Will be loaded from admin
+    //   syncInterval: 300000, // Will be loaded from admin
+    //   retryAttempts: 3, // Will be loaded from admin
+    //   retryDelay: 1000, // Will be loaded from admin
+    //   onError: (error: Error) => {
+    //     console.error('Photos API Sync Error:', error)
+    //   },
+    // }),
     // storage-adapter-placeholder
   ],
   secret: process.env.PAYLOAD_SECRET,

@@ -207,6 +207,7 @@ export interface Page {
     | FormBlock
     | SwiperSliderBlock
     | PostsSliderBlock
+    | CollectionSliderBlock
   )[];
   meta?: {
     title?: string | null;
@@ -822,6 +823,44 @@ export interface PostsSliderBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CollectionSliderBlock".
+ */
+export interface CollectionSliderBlock {
+  title?: string | null;
+  description?: string | null;
+  collection: 'posts' | 'categories' | 'media' | 'bookings' | 'photos';
+  selectionMethod: 'manual' | 'latest' | 'category' | 'featured';
+  items?: (number | Post)[] | null;
+  category?: (number | null) | Category;
+  itemsLimit?: number | null;
+  display?: {
+    showImage?: boolean | null;
+    showTitle?: boolean | null;
+    showExcerpt?: boolean | null;
+    showDate?: boolean | null;
+    showCategory?: boolean | null;
+    excerptLength?: number | null;
+  };
+  slider?: {
+    autoplay?: boolean | null;
+    delay?: number | null;
+    loop?: boolean | null;
+    nav?: boolean | null;
+    pagination?: boolean | null;
+    perView?: ('1' | '2' | '3' | '4') | null;
+    space?: number | null;
+  };
+  styling?: {
+    cardStyle?: ('modern' | 'minimal' | 'classic') | null;
+    theme?: ('light' | 'dark') | null;
+    showReadMore?: boolean | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'collectionSlider';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "bookings".
  */
 export interface Booking {
@@ -1207,6 +1246,7 @@ export interface PagesSelect<T extends boolean = true> {
         formBlock?: T | FormBlockSelect<T>;
         swiperSlider?: T | SwiperSliderBlockSelect<T>;
         postsSlider?: T | PostsSliderBlockSelect<T>;
+        collectionSlider?: T | CollectionSliderBlockSelect<T>;
       };
   meta?:
     | T
@@ -1357,6 +1397,49 @@ export interface PostsSliderBlockSelect<T extends boolean = true> {
   posts?: T;
   category?: T;
   postsLimit?: T;
+  display?:
+    | T
+    | {
+        showImage?: T;
+        showTitle?: T;
+        showExcerpt?: T;
+        showDate?: T;
+        showCategory?: T;
+        excerptLength?: T;
+      };
+  slider?:
+    | T
+    | {
+        autoplay?: T;
+        delay?: T;
+        loop?: T;
+        nav?: T;
+        pagination?: T;
+        perView?: T;
+        space?: T;
+      };
+  styling?:
+    | T
+    | {
+        cardStyle?: T;
+        theme?: T;
+        showReadMore?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CollectionSliderBlock_select".
+ */
+export interface CollectionSliderBlockSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  collection?: T;
+  selectionMethod?: T;
+  items?: T;
+  category?: T;
+  itemsLimit?: T;
   display?:
     | T
     | {
