@@ -7,6 +7,7 @@ import { Logo } from './Logo/Logo'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { CMSLink } from './Link'
 import { SocialMediaIcons } from './SocialMediaIcons'
+import { GlobalLogo } from './GlobalLogo'
 
 interface GlobalFooterProps {
   navItems?: Array<{
@@ -59,14 +60,9 @@ export const GlobalFooter: React.FC<GlobalFooterProps> = ({ navItems = [] }) => 
     <footer className="mt-auto border-t border-border bg-black dark:bg-card text-white">
       <div className="container py-8 gap-8 flex flex-col md:flex-row md:justify-between">
         <div className="flex flex-col gap-4">
-          <Link className="flex items-center" href="/">
-            <Logo
-              width={193}
-              height={34}
-              siteName={siteName}
-              className="max-w-[9.375rem] w-full h-[34px]"
-            />
-          </Link>
+        <Link href="/">
+          <GlobalLogo loading="eager" priority="high" className="invert dark:invert-0" />
+        </Link>
 
           {footerText && <p className="text-sm text-gray-300 max-w-md">{footerText}</p>}
 
