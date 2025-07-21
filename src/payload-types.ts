@@ -199,7 +199,15 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | SwiperSliderBlock)[];
+  layout: (
+    | CallToActionBlock
+    | ContentBlock
+    | MediaBlock
+    | ArchiveBlock
+    | FormBlock
+    | SwiperSliderBlock
+    | PostsSliderBlock
+  )[];
   meta?: {
     title?: string | null;
     /**
@@ -777,6 +785,43 @@ export interface SwiperSliderBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PostsSliderBlock".
+ */
+export interface PostsSliderBlock {
+  title?: string | null;
+  description?: string | null;
+  selectionMethod: 'manual' | 'latest' | 'category' | 'featured';
+  posts?: (number | Post)[] | null;
+  category?: (number | null) | Category;
+  postsLimit?: number | null;
+  display?: {
+    showImage?: boolean | null;
+    showTitle?: boolean | null;
+    showExcerpt?: boolean | null;
+    showDate?: boolean | null;
+    showCategory?: boolean | null;
+    excerptLength?: number | null;
+  };
+  slider?: {
+    autoplay?: boolean | null;
+    delay?: number | null;
+    loop?: boolean | null;
+    nav?: boolean | null;
+    pagination?: boolean | null;
+    perView?: ('1' | '2' | '3' | '4') | null;
+    space?: number | null;
+  };
+  styling?: {
+    cardStyle?: ('modern' | 'minimal' | 'classic') | null;
+    theme?: ('light' | 'dark') | null;
+    showReadMore?: boolean | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'postsSlider';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "bookings".
  */
 export interface Booking {
@@ -1161,6 +1206,7 @@ export interface PagesSelect<T extends boolean = true> {
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
         swiperSlider?: T | SwiperSliderBlockSelect<T>;
+        postsSlider?: T | PostsSliderBlockSelect<T>;
       };
   meta?:
     | T
@@ -1296,6 +1342,48 @@ export interface SwiperSliderBlockSelect<T extends boolean = true> {
     | {
         height?: T;
         theme?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PostsSliderBlock_select".
+ */
+export interface PostsSliderBlockSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  selectionMethod?: T;
+  posts?: T;
+  category?: T;
+  postsLimit?: T;
+  display?:
+    | T
+    | {
+        showImage?: T;
+        showTitle?: T;
+        showExcerpt?: T;
+        showDate?: T;
+        showCategory?: T;
+        excerptLength?: T;
+      };
+  slider?:
+    | T
+    | {
+        autoplay?: T;
+        delay?: T;
+        loop?: T;
+        nav?: T;
+        pagination?: T;
+        perView?: T;
+        space?: T;
+      };
+  styling?:
+    | T
+    | {
+        cardStyle?: T;
+        theme?: T;
+        showReadMore?: T;
       };
   id?: T;
   blockName?: T;

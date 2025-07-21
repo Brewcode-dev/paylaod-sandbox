@@ -8,6 +8,7 @@ import { ContentBlock } from '@/blocks/Content/Component'
 import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { SwiperSliderBlock } from '@/blocks/SwiperSlider/Component'
+import { PostsSliderBlock } from '@/blocks/PostsSlider/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -16,6 +17,7 @@ const blockComponents = {
   formBlock: FormBlock,
   mediaBlock: MediaBlock,
   swiperSlider: SwiperSliderBlock,
+  postsSlider: PostsSliderBlock,
 }
 
 export const RenderBlocks: React.FC<{
