@@ -225,6 +225,51 @@ export const PostsSliderBlock: React.FC<Props> = ({
     })
   }
 
+  // Helper function to extract plain text from rich text content
+  const extractTextFromRichText = (content: any): string => {
+    if (!content) return ''
+    
+    // If it's already a string, return it
+    if (typeof content === 'string') return content
+    
+    // If it's a Lexical rich text object
+    if (content.root && content.root.children) {
+      return extractTextFromLexicalNodes(content.root.children)
+    }
+    
+    // Fallback: try to stringify and extract text
+    try {
+      const contentStr = JSON.stringify(content)
+      // Remove JSON syntax and extract text content
+      return contentStr.replace(/[{}"\[\],:]/g, ' ').replace(/\s+/g, ' ').trim()
+    } catch {
+      return ''
+    }
+  }
+
+  // Helper function to extract text from Lexical nodes
+  const extractTextFromLexicalNodes = (nodes: any[]): string => {
+    if (!Array.isArray(nodes)) return ''
+    
+    return nodes.map(node => {
+      if (node.type === 'paragraph' || node.type === 'heading') {
+        if (node.children) {
+          return extractTextFromLexicalNodes(node.children)
+        }
+      }
+      
+      if (node.type === 'text' && node.text) {
+        return node.text
+      }
+      
+      if (node.children) {
+        return extractTextFromLexicalNodes(node.children)
+      }
+      
+      return ''
+    }).join(' ').replace(/\s+/g, ' ').trim()
+  }
+
   return (
     <div className={cn(
       'mx-auto my-8 w-full',
@@ -292,10 +337,8 @@ export const PostsSliderBlock: React.FC<Props> = ({
                   {display?.showExcerpt && post.content && (
                     <p className="text-gray-600 mb-4 line-clamp-3">
                       {truncateText(
-                        // This is a simplified excerpt - you might need to parse rich text content
-                        typeof post.content === 'string' 
-                          ? post.content 
-                          : JSON.stringify(post.content),
+                        // Extract plain text from rich text content
+                        extractTextFromRichText(post.content),
                         display.excerptLength || 150
                       )}
                     </p>
