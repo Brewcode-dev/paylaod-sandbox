@@ -294,14 +294,14 @@ export const CollectionSliderBlock: React.FC<Props> = ({
       )}
     >
       {title && (
-        <div className="text-center mb-6">
+        <div className="text-center mb-6 pt-6">
           <h2 className="text-3xl font-bold mb-2">{title}</h2>
           {description && (
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">{description}</p>
           )}
         </div>
       )}
-      <div className="relative">
+      <div className="relative py-6">
         <Swiper ref={swiperRef} {...swiperConfig} className="w-full">
           {items.map((item) => {
             const config = collectionConfig[collection];
