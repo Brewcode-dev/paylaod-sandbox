@@ -7,14 +7,19 @@ export class ApiClient {
   constructor(config: ApiSyncConfig) {
     this.config = config
     this.baseUrl = config.apiUrl.replace(/\/$/, '') // Remove trailing slash
+    console.log('🔧 ApiClient initialized with config:', {
+      baseUrl: this.baseUrl,
+      endpoint: config.endpoint,
+      hasToken: !!config.jwtToken,
+    })
   }
 
   private async makeRequest<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseUrl}/${endpoint.replace(/^\//, '')}`
-    
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...this.config.headers,
@@ -33,20 +38,54 @@ export class ApiClient {
       },
     }
 
+    console.log('🌐 Making API request:', {
+      url,
+      method: options.method || 'GET',
+      hasAuth: !!this.config.jwtToken,
+      headers: Object.keys(headers),
+    })
+
     try {
+      // Check if fetch is available
+      if (typeof fetch === 'undefined') {
+        throw new Error(
+          'fetch is not available in this environment. Please install node-fetch or use a polyfill.',
+        )
+      }
+
       const response = await fetch(url, requestOptions)
-      
+
+      console.log('📡 API Response:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
+      })
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        const errorText = await response.text()
+        console.error('❌ API Error Response:', errorText)
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`)
       }
 
       const data = await response.json()
-      
+
+      console.log('✅ API request successful, data received:', {
+        dataType: typeof data,
+        hasResults: data && typeof data === 'object' && 'results' in data,
+        resultsCount: data?.results?.length || 0,
+      })
+
       return {
         data,
         success: true,
       }
     } catch (error) {
+      console.error('❌ API request failed:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        url,
+      })
+
       return {
         data: undefined as T,
         success: false,
@@ -57,15 +96,17 @@ export class ApiClient {
 
   async getBookingsByContractor(contractorId?: string): Promise<ApiResponse<BookingData[]>> {
     const endpoint = this.config.endpoint
-    
+
     // Add query parameters if contractorId is provided
     const queryParams = contractorId ? `?contractorId=${contractorId}` : ''
     const fullEndpoint = `${endpoint}${queryParams}`
-    
+
+    console.log('📋 Getting bookings by contractor:', { contractorId, fullEndpoint })
     return this.makeRequest<BookingData[]>(fullEndpoint)
   }
 
   async getBookings(): Promise<ApiResponse<BookingData[]>> {
+    console.log('📋 Getting all bookings from endpoint:', this.config.endpoint)
     return this.makeRequest<BookingData[]>(this.config.endpoint)
   }
 
@@ -84,6 +125,7 @@ export class ApiClient {
 
   // Update JWT token
   updateJwtToken(token: string): void {
+    console.log('🔑 Updating JWT token')
     this.config.jwtToken = token
   }
 
@@ -94,4 +136,4 @@ export class ApiClient {
       ...headers,
     }
   }
-} 
+}

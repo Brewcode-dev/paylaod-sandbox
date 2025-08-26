@@ -4,16 +4,16 @@ export interface ApiSyncConfig {
   endpoint: string
   jwtToken?: string
   headers?: Record<string, string>
-  
+
   // Sync Configuration
   collectionName: string
   syncInterval?: number // in milliseconds
   autoSync?: boolean
-  
+
   // Data Mapping
   fieldMapping?: Record<string, string>
   transformData?: (data: any) => any
-  
+
   // Error Handling
   onError?: (error: Error) => void
   retryAttempts?: number
@@ -62,4 +62,4 @@ export interface SyncJob {
   startedAt?: Date
   completedAt?: Date
   error?: string
-} 
+}

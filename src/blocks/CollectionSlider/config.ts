@@ -71,8 +71,8 @@ export const CollectionSlider: Block = {
       min: 1,
       max: 20,
       admin: {
-        condition: (data, siblingData) => 
-          siblingData?.selectionMethod === 'latest' || 
+        condition: (data, siblingData) =>
+          siblingData?.selectionMethod === 'latest' ||
           siblingData?.selectionMethod === 'category' ||
           siblingData?.selectionMethod === 'featured',
       },
@@ -163,19 +163,18 @@ export const CollectionSlider: Block = {
           label: 'Show Pagination Dots',
           defaultValue: true,
         },
-        // Temporarily removed perView field to fix migration issue
-        // {
-        //   name: 'perView',
-        //   type: 'select',
-        //   label: 'Slides Per View',
-        //   defaultValue: '3',
-        //   options: [
-        //     { label: '1', value: '1' },
-        //     { label: '2', value: '2' },
-        //     { label: '3', value: '3' },
-        //     { label: '4', value: '4' },
-        //   ],
-        // },
+        {
+          name: 'perView',
+          type: 'select',
+          label: 'Slides Per View',
+          defaultValue: '3',
+          options: [
+            { label: '1', value: '1' },
+            { label: '2', value: '2' },
+            { label: '3', value: '3' },
+            { label: '4', value: '4' },
+          ],
+        },
         {
           name: 'space',
           type: 'number',
@@ -219,4 +218,4 @@ export const CollectionSlider: Block = {
       ],
     },
   ],
-} 
+}

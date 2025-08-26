@@ -847,6 +847,7 @@ export interface CollectionSliderBlock {
     loop?: boolean | null;
     nav?: boolean | null;
     pagination?: boolean | null;
+    perView?: ('1' | '2' | '3' | '4') | null;
     space?: number | null;
   };
   styling?: {
@@ -872,6 +873,10 @@ export interface Booking {
    * Contractor ID from the API
    */
   contractorId: string;
+  /**
+   * Imię i nazwisko pacjenta
+   */
+  fullName: string;
   /**
    * Booking date from the API
    */
@@ -1457,6 +1462,7 @@ export interface CollectionSliderBlockSelect<T extends boolean = true> {
         loop?: T;
         nav?: T;
         pagination?: T;
+        perView?: T;
         space?: T;
       };
   styling?:
@@ -1643,6 +1649,7 @@ export interface UsersSelect<T extends boolean = true> {
 export interface BookingsSelect<T extends boolean = true> {
   externalId?: T;
   contractorId?: T;
+  fullName?: T;
   bookingDate?: T;
   status?: T;
   lastSynced?: T;

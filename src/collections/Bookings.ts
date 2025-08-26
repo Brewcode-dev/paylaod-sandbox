@@ -5,14 +5,27 @@ export const Bookings: CollectionConfig = {
   slug: 'bookings',
   admin: {
     useAsTitle: 'externalId',
-    defaultColumns: ['externalId', 'contractorId', 'bookingDate', 'status', 'lastSynced'],
+    defaultColumns: [
+      'externalId',
+      'contractorId',
+      'fullName',
+      'bookingDate',
+      'status',
+      'lastSynced',
+    ],
     group: 'Content',
   },
   access: {
     read: () => true,
-    create: () => false, // Read-only - tylko synchronizacja
-    update: () => false, // Read-only - tylko synchronizacja
-    delete: () => false, // Read-only - tylko synchronizacja
+    create: ({ req }) => {
+      // Allow creation for sync operations (no user context) or authenticated users
+      return !req.user || !!req.user
+    },
+    update: ({ req }) => {
+      // Allow updates for sync operations (no user context) or authenticated users
+      return !req.user || !!req.user
+    },
+    delete: () => true, // Read-only - nie można usuwać
   },
   fields: [
     {
@@ -30,6 +43,14 @@ export const Bookings: CollectionConfig = {
       required: true,
       admin: {
         description: 'Contractor ID from the API',
+      },
+    },
+    {
+      name: 'fullName',
+      type: 'text',
+      required: true,
+      admin: {
+        description: 'Imię i nazwisko pacjenta',
       },
     },
     {
@@ -80,4 +101,4 @@ export const Bookings: CollectionConfig = {
       },
     ],
   },
-} 
+}

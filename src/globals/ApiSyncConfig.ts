@@ -142,31 +142,38 @@ export const ApiSyncConfig: GlobalConfig = {
   ],
   hooks: {
     beforeChange: [
-      ({ data }) => {
+      ({ data, req }) => {
+        console.log('🔧 ApiSyncConfig beforeChange hook triggered')
+        console.log('Data to save:', data)
+
         // Aktualizuj timestamp przy każdej zmianie konfiguracji
         data.updatedAt = new Date()
+
+        // Log the user making the change
+        if (req.user) {
+          console.log('User making change:', req.user.email)
+        }
+
         return data
       },
     ],
     afterChange: [
       async ({ doc, req }) => {
-        // Aktualizuj statystyki synchronizacji po zmianie konfiguracji
-        try {
-          const { payload } = req
-          
-          // Aktualizuj global z informacjami o ostatniej synchronizacji
-          await payload.updateGlobal({
-            slug: 'api-sync-config',
-            data: {
-              ...doc,
-              lastSync: doc.lastSync || new Date(),
-              lastSyncStatus: doc.lastSyncStatus || 'never',
-            },
-          })
-        } catch (error) {
-          console.error('Failed to update sync stats:', error)
+        console.log('✅ ApiSyncConfig afterChange hook triggered')
+        console.log('Saved document:', doc)
+
+        // Log successful save
+        if (req.user) {
+          console.log(`Configuration saved by user: ${req.user.email}`)
         }
       },
     ],
+    beforeValidate: [
+      ({ data, req }) => {
+        console.log('🔍 ApiSyncConfig beforeValidate hook triggered')
+        console.log('Validating data:', data)
+        return data
+      },
+    ],
   },
-} 
+}

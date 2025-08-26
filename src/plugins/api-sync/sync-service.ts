@@ -24,20 +24,53 @@ export class SyncService {
     }
 
     try {
+      console.log('🔄 Starting syncBookings...')
+
       // Fetch data from external API
       const apiResponse = await this.apiClient.getBookings()
-      
+
       if (!apiResponse.success || !apiResponse.data) {
         result.errors.push(`API request failed: ${apiResponse.error}`)
         return result
       }
 
-      const bookings = apiResponse.data as BookingData[]
+      const responseData = apiResponse.data as any
+
+      console.log('📡 API Response structure:', {
+        hasData: !!responseData,
+        dataType: typeof responseData,
+        hasResults: responseData && typeof responseData === 'object' && 'results' in responseData,
+        resultsType: responseData?.results ? typeof responseData.results : 'undefined',
+        resultsLength: Array.isArray(responseData?.results)
+          ? responseData.results.length
+          : 'not array',
+      })
+
+      // Handle different API response structures
+      let bookings: BookingData[] = []
+
+      if (Array.isArray(responseData)) {
+        // Direct array response
+        bookings = responseData as BookingData[]
+        console.log('📋 Direct array response, found', bookings.length, 'bookings')
+      } else if (responseData && typeof responseData === 'object' && 'results' in responseData) {
+        // Response with results property
+        bookings = Array.isArray(responseData.results) ? responseData.results : []
+        console.log('📋 Results property response, found', bookings.length, 'bookings')
+      } else {
+        // Unknown structure
+        console.error('❌ Unknown API response structure:', responseData)
+        result.errors.push('Unknown API response structure')
+        return result
+      }
+
       result.recordsProcessed = bookings.length
+      console.log('📊 Processing', bookings.length, 'bookings')
 
       // Process each booking
       for (const booking of bookings) {
         try {
+          console.log('🔄 Processing booking:', booking.id)
           const transformedData = this.transformBookingData(booking)
           await this.upsertBooking(transformedData, result)
         } catch (error) {
@@ -47,30 +80,53 @@ export class SyncService {
       }
 
       result.success = result.errors.length === 0
+      console.log('✅ Sync completed:', {
+        success: result.success,
+        recordsProcessed: result.recordsProcessed,
+        recordsCreated: result.recordsCreated,
+        recordsUpdated: result.recordsUpdated,
+        errors: result.errors,
+      })
+
       return result
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      console.error('❌ Sync failed:', errorMessage)
       result.errors.push(`Sync failed: ${errorMessage}`)
       return result
     }
   }
 
   private transformBookingData(booking: BookingData): any {
+    console.log('🔄 Transforming booking data:', booking)
+
     // Apply custom transformation if provided
     if (this.config.transformData) {
       return this.config.transformData(booking)
     }
 
-    // Default transformation with field mapping
-    const transformed: any = {
-      externalId: booking.id,
-      contractorId: booking.contractorId,
-      bookingDate: new Date(booking.bookingDate),
-      status: booking.status,
-      // Map other fields based on fieldMapping config
-      ...this.mapFields(booking),
+    // Extract patient name from API response
+    let fullName = 'Nieznany pacjent'
+    if (booking.patient) {
+      const firstName = booking.patient.firstname || booking.patient.firstName || ''
+      const lastName = booking.patient.lastname || booking.patient.lastName || ''
+      fullName = `${firstName} ${lastName}`.trim()
+      if (!fullName) {
+        fullName = 'Nieznany pacjent'
+      }
     }
 
+    // Default transformation based on actual API response structure
+    const transformed: any = {
+      externalId: booking.id?.toString(),
+      contractorId: booking.patient?.id?.toString() || booking.contractorId?.toString(),
+      fullName: fullName,
+      bookingDate: booking.startTime ? new Date(booking.startTime) : new Date(),
+      status: this.mapBookingStatus(booking.bookingStatus || booking.status),
+      rawData: booking, // Store complete raw data
+    }
+
+    console.log('✅ Transformed booking data:', transformed)
     return transformed
   }
 
@@ -100,7 +156,7 @@ export class SyncService {
     }
 
     const mapped: Record<string, any> = {}
-    
+
     for (const [apiField, payloadField] of Object.entries(this.config.fieldMapping)) {
       if (data[apiField] !== undefined) {
         mapped[payloadField] = data[apiField]
@@ -146,7 +202,9 @@ export class SyncService {
         result.recordsCreated++
       }
     } catch (error) {
-      throw new Error(`Failed to upsert booking: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      throw new Error(
+        `Failed to upsert booking: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
     }
   }
 
@@ -186,7 +244,9 @@ export class SyncService {
         result.recordsCreated++
       }
     } catch (error) {
-      throw new Error(`Failed to upsert photo: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      throw new Error(
+        `Failed to upsert photo: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
     }
   }
 
@@ -204,7 +264,7 @@ export class SyncService {
     try {
       // Fetch data from external API
       const apiResponse = await this.apiClient.getPhotos()
-      
+
       if (!apiResponse.success || !apiResponse.data) {
         result.errors.push(`API request failed: ${apiResponse.error}`)
         return result
@@ -246,7 +306,7 @@ export class SyncService {
 
     try {
       const apiResponse = await this.apiClient.getPhotosByAlbum(albumId)
-      
+
       if (!apiResponse.success || !apiResponse.data) {
         result.errors.push(`API request failed: ${apiResponse.error}`)
         return result
@@ -287,7 +347,7 @@ export class SyncService {
 
     try {
       const apiResponse = await this.apiClient.getBookingsByContractor(contractorId)
-      
+
       if (!apiResponse.success || !apiResponse.data) {
         result.errors.push(`API request failed: ${apiResponse.error}`)
         return result
@@ -315,6 +375,20 @@ export class SyncService {
     }
   }
 
+  private mapBookingStatus(apiStatus: string): string {
+    // Map API status to Payload status
+    const statusMap: Record<string, string> = {
+      Planned: 'pending',
+      Confirmed: 'confirmed',
+      ToBeConfirmed: 'pending',
+      NoContact: 'cancelled',
+      Cancelled: 'cancelled',
+      Completed: 'completed',
+    }
+
+    return statusMap[apiStatus] || 'pending'
+  }
+
   // Update JWT token
   updateJwtToken(token: string): void {
     this.config.jwtToken = token
@@ -326,4 +400,4 @@ export class SyncService {
     this.config = { ...this.config, ...newConfig }
     this.apiClient.updateJwtToken(newConfig.jwtToken || '')
   }
-} 
+}
